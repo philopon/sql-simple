@@ -1,20 +1,13 @@
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE OverlappingInstances #-}
-{-# LANGUAGE NoMonomorphismRestriction #-}
-{-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE UndecidableInstances #-}
 
 import GHC.Exts (Constraint)
 import Control.Monad
@@ -83,8 +76,11 @@ class Elem a (as :: [*])
 instance Elem a (a ': as)
 instance Elem a as => Elem a' (a ': as)
 
-withConnection :: (Backend c, Elem c l) => ConnectInfo c -> proxy l -> (c -> Sql l a) -> IO a
-withConnection i _ f = bracket (connect i) close (unSql . f)
+withConnection :: (Backend c, Elem c l) => ConnectInfo c -> (c -> Sql l a) -> IO a
+withConnection i f = bracket (connect i) close (unSql . f)
+
+sql :: proxy l -> Sql l a -> Sql l a
+sql _ m = m
 
 class Backend conn where
     data ConnectInfo conn
@@ -132,13 +128,13 @@ instance Backend PostgreSQL where
     rollback (PostgreSQL c) = Sql $ PSql.rollback c
 
 psqlQuery :: Query -> PSql.Query
-psqlQuery = PSql.Query . T.encodeUtf8 . getQuery (typeOf $ PostgreSQL undefined)
+psqlQuery = PSql.Query . T.encodeUtf8 . getQuery (typeRep (Proxy :: Proxy PostgreSQL))
 
 data SQLite = SQLite SQLite.Connection
     deriving Typeable
 
 sqliteQuery :: Query -> SQLite.Query
-sqliteQuery = SQLite.Query . getQuery (typeOf $ SQLite undefined)
+sqliteQuery = SQLite.Query . getQuery (typeRep (Proxy :: Proxy SQLite))
 
 instance Backend SQLite where
     newtype ConnectInfo SQLite = SQLiteConnectInfo String
@@ -174,7 +170,7 @@ type instance (a ': as) ++ bs = a ': as ++ bs
 (+:+) :: Proxy a -> Proxy b -> Proxy (a ++ b)
 _ +:+ _ = Proxy
 
-test i = withConnection i (sqlite +:+ psql) $ \c -> do
+test i = withConnection i $ \c -> sql (sqlite +:+ psql) $ do
     execute_ c "CREATE TABLE test (id int)"
     execute  c "INSERT INTO test VALUES (?)" (Only (1 :: Int))
     map fromOnly <$> query_ c "SELECT * FROM test"
