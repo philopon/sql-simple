@@ -25,7 +25,7 @@ import qualified Data.HashMap.Strict as H
 data Query = Query T.Text (H.HashMap TypeRep T.Text)
 
 newtype Sql (l :: [*]) a = Sql { unSql :: IO a }
-    deriving (Functor, Applicative, Monad, MonadIO, Typeable, MonadThrow, MonadCatch, MonadMask)
+    deriving (Functor, Applicative, Monad, MonadIO, MonadThrow, MonadCatch, MonadMask)
 
 instance IsString Query where
     fromString s = Query (T.pack s) H.empty
