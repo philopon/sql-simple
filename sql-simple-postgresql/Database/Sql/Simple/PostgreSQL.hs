@@ -9,6 +9,7 @@ import Control.Applicative
 import Control.Monad
 import qualified Data.Text.Encoding as T
 import Data.Typeable
+import Data.Proxy
 import Database.Sql.Simple
 import qualified Database.PostgreSQL.Simple as PSql
 import qualified Database.PostgreSQL.Simple.ToRow as PSql

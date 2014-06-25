@@ -12,6 +12,7 @@ import Database.Sql.Simple
 import qualified Database.SQLite.Simple as SQLite
 import qualified Database.SQLite.Simple.ToField as SQLite
 import qualified Database.SQLite.Simple.FromField as SQLite
+import Data.Proxy
 
 data SQLite = SQLite SQLite.Connection
     deriving Typeable
