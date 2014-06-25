@@ -5,7 +5,8 @@
 
 module Database.Sql.Simple.PostgreSQL
     ( PostgreSQL
-    , postgreSQL, psql
+    , ConnectInfo(..)
+    , backend
     ) where
 
 import Control.Applicative
@@ -13,6 +14,7 @@ import Control.Monad
 import qualified Data.Text.Encoding as T
 import Data.Typeable
 import Data.Proxy
+import Data.Word
 import Database.Sql.Simple.Internal
 import qualified Database.PostgreSQL.Simple as PSql
 import qualified Database.PostgreSQL.Simple.ToRow as PSql
@@ -37,11 +39,18 @@ instance (PSql.FromRow a, PSql.FromRow b) => PSql.FromRow (a :. b) where
     fromRow = (\(a PSql.:. b) -> a :. b) <$> PSql.fromRow
 
 instance Backend PostgreSQL where
-    newtype ConnectInfo PostgreSQL = PSqlConnectInfo PSql.ConnectInfo
+    data ConnectInfo PostgreSQL = ConnectInfo
+        { connectHost :: String
+        , connectPort :: Word16
+        , connectUser :: String
+        , connectPassword :: String
+        , connectDatabase :: String
+        }
     type ToRow   PostgreSQL = PSql.ToRow
     type FromRow PostgreSQL = PSql.FromRow
 
-    connect (PSqlConnectInfo i) = PostgreSQL <$> PSql.connect i
+    connect (ConnectInfo h p u w d) =
+        PostgreSQL <$> PSql.connect (PSql.ConnectInfo h p u w d)
     close   (PostgreSQL      c) = PSql.close c
 
     execute  (PostgreSQL c) t q = void . Sql $ PSql.execute  c (psqlQuery t) q
@@ -57,9 +66,5 @@ instance Backend PostgreSQL where
 psqlQuery :: Query -> PSql.Query
 psqlQuery = PSql.Query . T.encodeUtf8 . getQuery (typeOf (undefined :: PostgreSQL))
 
-postgreSQL :: Proxy '[PostgreSQL]
-postgreSQL = Proxy
-
-psql :: Proxy '[PostgreSQL]
-psql = postgreSQL
-
+backend :: Proxy '[PostgreSQL]
+backend = Proxy

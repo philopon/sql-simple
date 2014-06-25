@@ -5,6 +5,8 @@ module Database.Sql.Simple
       Query
     , specify
     , Sql
+    , Elem
+    , Backend(..)
     , Only(..)
     , (:.)((:.))
     -- * function

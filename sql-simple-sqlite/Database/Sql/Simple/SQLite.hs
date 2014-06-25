@@ -6,7 +6,8 @@
 
 module Database.Sql.Simple.SQLite
     ( SQLite
-    , sqlite 
+    , ConnectInfo(..)
+    , backend
     ) where
 
 import Control.Applicative
@@ -24,11 +25,11 @@ sqliteQuery :: Query -> SQLite.Query
 sqliteQuery = SQLite.Query . getQuery (typeOf (undefined :: SQLite))
 
 instance Backend SQLite where
-    newtype ConnectInfo SQLite = SQLiteConnectInfo String
+    newtype ConnectInfo SQLite = ConnectInfo String
     type ToRow   SQLite = SQLite.ToRow
     type FromRow SQLite = SQLite.FromRow
 
-    connect (SQLiteConnectInfo i) = SQLite <$> SQLite.open i
+    connect (ConnectInfo i) = SQLite <$> SQLite.open i
     close   (SQLite c) = SQLite.close c
 
     execute  (SQLite c) t q = Sql $ SQLite.execute  c (sqliteQuery t) q
@@ -41,8 +42,8 @@ instance Backend SQLite where
     commit   c = execute_ c "COMMIT TRANSACTION"
     rollback c = execute_ c "ROLLBACK TRANSACTION"
 
-sqlite :: Proxy '[SQLite]
-sqlite = Proxy
+backend :: Proxy '[SQLite]
+backend = Proxy
 
 instance SQLite.ToField a => SQLite.ToRow (Only a) where
     toRow (Only v) = SQLite.toRow $ SQLite.Only v
