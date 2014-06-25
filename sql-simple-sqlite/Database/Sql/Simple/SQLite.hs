@@ -18,7 +18,7 @@ data SQLite = SQLite SQLite.Connection
     deriving Typeable
 
 sqliteQuery :: Query -> SQLite.Query
-sqliteQuery = SQLite.Query . getQuery (typeRep (Proxy :: Proxy SQLite))
+sqliteQuery = SQLite.Query . getQuery (typeOf (undefined :: SQLite))
 
 instance Backend SQLite where
     newtype ConnectInfo SQLite = SQLiteConnectInfo String

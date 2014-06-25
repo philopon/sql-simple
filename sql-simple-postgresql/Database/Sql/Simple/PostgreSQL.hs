@@ -52,7 +52,7 @@ instance Backend PostgreSQL where
     rollback (PostgreSQL c) = Sql $ PSql.rollback c
 
 psqlQuery :: Query -> PSql.Query
-psqlQuery = PSql.Query . T.encodeUtf8 . getQuery (typeRep (Proxy :: Proxy PostgreSQL))
+psqlQuery = PSql.Query . T.encodeUtf8 . getQuery (typeOf (undefined :: PostgreSQL))
 
 postgreSQL :: Proxy '[PostgreSQL]
 postgreSQL = Proxy
