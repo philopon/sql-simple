@@ -4,11 +4,14 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Database.Sql.Simple.SQLite where
+module Database.Sql.Simple.SQLite
+    ( SQLite
+    , sqlite 
+    ) where
 
 import Control.Applicative
 import Data.Typeable
-import Database.Sql.Simple
+import Database.Sql.Simple.Internal
 import qualified Database.SQLite.Simple as SQLite
 import qualified Database.SQLite.Simple.ToField as SQLite
 import qualified Database.SQLite.Simple.FromField as SQLite

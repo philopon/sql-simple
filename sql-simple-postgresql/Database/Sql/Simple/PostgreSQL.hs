@@ -3,14 +3,17 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 
-module Database.Sql.Simple.PostgreSQL where
+module Database.Sql.Simple.PostgreSQL
+    ( PostgreSQL
+    , postgreSQL, psql
+    ) where
 
 import Control.Applicative
 import Control.Monad
 import qualified Data.Text.Encoding as T
 import Data.Typeable
 import Data.Proxy
-import Database.Sql.Simple
+import Database.Sql.Simple.Internal
 import qualified Database.PostgreSQL.Simple as PSql
 import qualified Database.PostgreSQL.Simple.ToRow as PSql
 import qualified Database.PostgreSQL.Simple.FromRow as PSql
