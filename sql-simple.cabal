@@ -14,7 +14,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Database.Sql.Simple
-  build-depends:       base                 >=4.7 && <4.8
+  build-depends:       base                 >=4.6 && <4.8
                      , exceptions           >=0.6 && <0.7
                      , text                 >=1.1 && <1.2
                      , transformers         >=0.4 && <0.5
