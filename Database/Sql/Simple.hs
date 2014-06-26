@@ -2,15 +2,38 @@
 
 module Database.Sql.Simple
     ( -- * data type
+      -- ** query
       Query
     , specify
-    , Sql
-    , Elem
-    , Backend(..)
+      -- ** parameter
+    , ToRow
+    , FromRow
     , Only(..)
     , (:.)((:.))
-    -- * function
+      -- ** other
+    , Sql
+    , Elem
+    , Backend
+      -- * connection
+    , ConnectInfo
     , withConnection
+    , connect
+    , close
+      -- * execute query
+    , execute
+    , execute_
+    , query
+    , query_
+      -- ** transaction
+    , begin
+    , commit
+    , rollback
+    , withTransaction
+    -- * specify backend
+    -- | 
+    -- @ 
+    --  sql (sqlite +:+ postgresql) $ query
+    -- @
     , sql
     , (+:+)
     , type (++)

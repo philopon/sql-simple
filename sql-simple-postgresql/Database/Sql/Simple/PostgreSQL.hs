@@ -43,17 +43,17 @@ instance (PSql.FromRow a, PSql.FromRow b) => PSql.FromRow (a :. b) where
     fromRow = (\(a PSql.:. b) -> a :. b) <$> PSql.fromRow
 
 instance Backend PostgreSQL where
-    data ConnectInfo PostgreSQL = PostgreSqlConnectInfo
-        { connectHost :: String
-        , connectPort :: Word16
-        , connectUser :: String
+    data ConnectInfo PostgreSQL = ConnectInfo
+        { connectHost     :: String
+        , connectPort     :: Word16
+        , connectUser     :: String
         , connectPassword :: String
         , connectDatabase :: String
         } deriving (Eq, Read, Show)
     type ToRow   PostgreSQL = PSql.ToRow
     type FromRow PostgreSQL = PSql.FromRow
 
-    connect (PostgreSqlConnectInfo h p u w d) =
+    connect (ConnectInfo h p u w d) =
         PostgreSQL <$> PSql.connect (PSql.ConnectInfo h p u w d)
     close   (PostgreSQL      c) = PSql.close c
 
@@ -68,7 +68,7 @@ instance Backend PostgreSQL where
     rollback (PostgreSQL c) = Sql $ PSql.rollback c
 
 instance Default (ConnectInfo PostgreSQL) where
-    def = PostgreSqlConnectInfo h p u w d
+    def = ConnectInfo h p u w d
       where
         PSql.ConnectInfo h p u w d = PSql.defaultConnectInfo
 
