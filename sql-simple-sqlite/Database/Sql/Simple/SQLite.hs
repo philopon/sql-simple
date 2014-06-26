@@ -27,11 +27,11 @@ sqliteQuery :: Query -> SQLite.Query
 sqliteQuery = SQLite.Query . getQuery (typeOf (undefined :: SQLite))
 
 instance Backend SQLite where
-    newtype ConnectInfo SQLite = SQLiteConnectInfo String deriving (Eq, Read, Show)
+    newtype ConnectInfo SQLite = ConnectInfo String deriving (Eq, Read, Show)
     type ToRow   SQLite = SQLite.ToRow
     type FromRow SQLite = SQLite.FromRow
 
-    connect (SQLiteConnectInfo i) = SQLite <$> SQLite.open i
+    connect (ConnectInfo i) = SQLite <$> SQLite.open i
     close   (SQLite c) = SQLite.close c
 
     execute  (SQLite c) t q = Sql $ SQLite.execute  c (sqliteQuery t) q
@@ -45,7 +45,7 @@ instance Backend SQLite where
     rollback c = execute_ c "ROLLBACK TRANSACTION"
 
 instance IsString (ConnectInfo SQLite) where
-    fromString = SQLiteConnectInfo
+    fromString = ConnectInfo
 
 sqlite :: Proxy '[SQLite]
 sqlite = Proxy

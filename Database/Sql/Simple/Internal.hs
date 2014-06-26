@@ -25,6 +25,7 @@ import Data.String
 import qualified Data.HashMap.Strict as H
 
 data Query = Query T.Text (H.HashMap TypeRep T.Text)
+    deriving (Show, Eq)
 
 newtype Sql (l :: [*]) a = Sql { unSql :: IO a }
     deriving (Functor, Applicative, Monad, MonadIO, MonadThrow, MonadCatch, MonadMask)
@@ -44,31 +45,32 @@ class Elem a (as :: [*])
 instance Elem a (a ': as)
 instance Elem a as => Elem a (a' ': as)
 
-withConnection :: (Backend c, Elem c l) => ConnectInfo c -> (c -> Sql l a) -> IO a
+withConnection :: (Backend b, Elem b bs) => ConnectInfo b -> (b -> Sql bs a) -> IO a
 withConnection i f = bracket (connect i) close (unSql . f)
 
 -- | specify sql backends.
-sql :: proxy l -> Sql l a -> Sql l a
+--
+sql :: proxy bs -> Sql bs a -> Sql bs a
 sql _ m = m
 
-class Backend conn where
-    data ConnectInfo conn
-    type ToRow conn   :: * -> Constraint
-    type FromRow conn :: * -> Constraint
+class Typeable b => Backend b where
+    data ConnectInfo b
+    type ToRow b   :: * -> Constraint
+    type FromRow b :: * -> Constraint
   
-    connect :: ConnectInfo conn -> IO conn
-    close   :: conn -> IO ()
+    connect :: ConnectInfo b -> IO b
+    close   :: b -> IO ()
     
-    execute  :: ToRow conn q => conn -> Query -> q -> Sql c ()
-    execute_ :: conn -> Query -> Sql c ()
+    execute  :: ToRow b q => b -> Query -> q -> Sql c ()
+    execute_ :: b -> Query -> Sql c ()
   
-    query    :: (FromRow conn r, ToRow conn q) => conn -> Query -> q -> Sql c [r]
-    query_   :: FromRow conn r => conn -> Query -> Sql c [r]
+    query    :: (FromRow b r, ToRow b q) => b -> Query -> q -> Sql c [r]
+    query_   :: FromRow b r => b -> Query -> Sql c [r]
   
-    begin    :: conn -> Sql c ()
-    commit   :: conn -> Sql c ()
-    rollback :: conn -> Sql c ()
-    withTransaction :: conn -> Sql c a -> Sql c a
+    begin    :: b -> Sql c ()
+    commit   :: b -> Sql c ()
+    rollback :: b -> Sql c ()
+    withTransaction :: b -> Sql c a -> Sql c a
     withTransaction c action = mask $ \restore -> do
         begin c
         r <- restore action `onException` rollback c
@@ -84,7 +86,13 @@ type instance (a ': as) ++ bs = a ': as ++ bs
 _ +:+ _ = Proxy
 
 -- | add specified query string to Query.
-specify :: Typeable a => proxy ((a :: *) ': '[]) -> T.Text -> Query -> Query
+--
+-- example:
+-- 
+-- @
+-- q = specify sqlite "sqlite query" "common query"
+-- @
+specify :: Backend b => proxy ((b :: *) ': '[]) -> T.Text -> Query -> Query
 specify p q (Query t h) = Query t (H.insert (headt p) q h)
   where
     headt :: forall proxy a as. Typeable a => proxy ((a :: *) ': as) -> TypeRep
