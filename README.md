@@ -24,14 +24,14 @@ testQuery c = do
     execute  c "INSERT INTO test VALUES (?)" (Only (1 :: Int))
     map fromOnly <$> query_ c "SELECT * FROM test"
 
--- or sql function(testQuery' equivalent to testQuery).
+-- or sql function(testQuery' is equivalent to testQuery).
 testQuery' c = sql (sqlite +:+ postgreSQL) $ do
     execute_ c "CREATE TABLE test (id int)"
     execute  c "INSERT INTO test VALUES (?)" (Only (1 :: Int))
     i <- map fromOnly <$> query_ c "SELECT * FROM test"
     return (i :: [Int])
 
--- you can specify backend specific Query.
+-- you can set backend specific Query.
 specificQuery :: Backend conn => conn -> Sql '[SQLite, PostgreSQL] ()
 specificQuery c =
     execute_ c (specify sqlite "[sqlite query]" "[common query]")
