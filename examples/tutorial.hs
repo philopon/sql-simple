@@ -1,11 +1,3 @@
-sql-simple [![Build Status](https://travis-ci.org/philopon/sql-simple.svg?branch=master)](https://travis-ci.org/philopon/sql-simple)
-===
-common middle-level sql client.
-
-tutorial
-===
-
-```.hs
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE ConstraintKinds #-}
@@ -41,4 +33,3 @@ main = do
     l <- withConnection ("test.sqlite3" :: ConnectInfo SQLite) testQuery
     -- l <- withConnection (def :: ConnectInfo PostgreSQL) testQuery
     print l
-```
