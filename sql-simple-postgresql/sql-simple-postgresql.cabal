@@ -18,6 +18,7 @@ library
                      , text                 >=1.1 && <1.2
                      , sql-simple           >=0.1 && <0.2
                      , postgresql-simple    >=0.4 && <0.5
+                     , data-default-class   >=0.0 && <0.1
 
   if impl(ghc < 7.8)
     build-depends:     tagged               >=0.7 && <0.8

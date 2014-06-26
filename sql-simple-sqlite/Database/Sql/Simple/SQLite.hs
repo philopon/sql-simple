@@ -3,11 +3,12 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Database.Sql.Simple.SQLite
     ( SQLite
     , ConnectInfo(..)
-    , backend
+    , sqlite
     ) where
 
 import Control.Applicative
@@ -16,6 +17,7 @@ import Database.Sql.Simple.Internal
 import qualified Database.SQLite.Simple as SQLite
 import qualified Database.SQLite.Simple.ToField as SQLite
 import qualified Database.SQLite.Simple.FromField as SQLite
+import Data.String
 import Data.Proxy
 
 data SQLite = SQLite SQLite.Connection
@@ -25,11 +27,11 @@ sqliteQuery :: Query -> SQLite.Query
 sqliteQuery = SQLite.Query . getQuery (typeOf (undefined :: SQLite))
 
 instance Backend SQLite where
-    newtype ConnectInfo SQLite = ConnectInfo String
+    newtype ConnectInfo SQLite = SQLiteConnectInfo String deriving (Eq, Read, Show)
     type ToRow   SQLite = SQLite.ToRow
     type FromRow SQLite = SQLite.FromRow
 
-    connect (ConnectInfo i) = SQLite <$> SQLite.open i
+    connect (SQLiteConnectInfo i) = SQLite <$> SQLite.open i
     close   (SQLite c) = SQLite.close c
 
     execute  (SQLite c) t q = Sql $ SQLite.execute  c (sqliteQuery t) q
@@ -42,8 +44,11 @@ instance Backend SQLite where
     commit   c = execute_ c "COMMIT TRANSACTION"
     rollback c = execute_ c "ROLLBACK TRANSACTION"
 
-backend :: Proxy '[SQLite]
-backend = Proxy
+instance IsString (ConnectInfo SQLite) where
+    fromString = SQLiteConnectInfo
+
+sqlite :: Proxy '[SQLite]
+sqlite = Proxy
 
 instance SQLite.ToField a => SQLite.ToRow (Only a) where
     toRow (Only v) = SQLite.toRow $ SQLite.Only v

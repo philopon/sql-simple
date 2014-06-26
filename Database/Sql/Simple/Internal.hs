@@ -9,6 +9,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE OverlappingInstances #-}
 
 module Database.Sql.Simple.Internal where
 
@@ -41,7 +42,7 @@ infixr 3 :.
 
 class Elem a (as :: [*])
 instance Elem a (a ': as)
-instance Elem a as => Elem a' (a ': as)
+instance Elem a as => Elem a (a' ': as)
 
 withConnection :: (Backend c, Elem c l) => ConnectInfo c -> (c -> Sql l a) -> IO a
 withConnection i f = bracket (connect i) close (unSql . f)
