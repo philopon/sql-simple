@@ -1,12 +1,14 @@
 name:                sql-simple
 version:             0.1.0.0
--- synopsis:            
--- description:         
+synopsis:            common middle-level sql client.
+description:         please read README.md <https://github.com/philopon/sql-simple/blob/master/README.md>
 license:             MIT
 license-file:        LICENSE
-author:              philopon
-maintainer:          philopon.dependence@gmail.com
--- copyright:           
+author:              HirotomoMoriwaki<philopon.dependence@gmail.com>
+maintainer:          HirotomoMoriwaki<philopon.dependence@gmail.com>
+Homepage:            https://github.com/philopon/sql-simple
+Bug-reports:         https://github.com/philopon/sql-simple/issues
+copyright:           (c) 2014 Hirotomo Moriwaki
 category:            Database
 build-type:          Simple
 extra-source-files:  README.md

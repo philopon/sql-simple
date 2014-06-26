@@ -1,6 +1,6 @@
 sql-simple [![Build Status](https://travis-ci.org/philopon/sql-simple.svg?branch=master)](https://travis-ci.org/philopon/sql-simple)
 ===
-wrapper package of (sqlite|postgresql)-simple package.
+common middle-level sql client.
 
 tutorial
 ===
