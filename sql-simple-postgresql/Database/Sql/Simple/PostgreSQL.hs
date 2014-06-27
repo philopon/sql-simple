@@ -1,8 +1,10 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE CPP #-}
 
 module Database.Sql.Simple.PostgreSQL
     ( PostgreSQL
@@ -16,7 +18,6 @@ import Control.Applicative
 import Control.Monad
 import qualified Data.Text.Encoding as T
 import Data.Typeable
-import Data.Proxy
 import Data.Word
 import Database.Sql.Simple.Internal
 import qualified Database.PostgreSQL.Simple as PSql
@@ -26,6 +27,9 @@ import qualified Database.PostgreSQL.Simple.ToField as PSql
 import qualified Database.PostgreSQL.Simple.FromField as PSql
 import qualified Database.PostgreSQL.Simple.Types as PSql
 import Data.Default.Class
+#if !MIN_VERSION_base(4,7,0)
+import Data.Proxy
+#endif
 
 data PostgreSQL = PostgreSQL PSql.Connection
     deriving Typeable

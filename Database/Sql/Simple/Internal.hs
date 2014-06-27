@@ -90,7 +90,7 @@ _ +:+ _ = Proxy
 -- example:
 -- 
 -- @
--- q = specify sqlite "sqlite query" "common query"
+-- q = specify sqlite \"sqlite query\" \"common query\"
 -- @
 specify :: Backend b => proxy ((b :: *) ': '[]) -> T.Text -> Query -> Query
 specify p q (Query t h) = Query t (H.insert (headt p) q h)

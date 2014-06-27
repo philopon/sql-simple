@@ -1,9 +1,11 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE CPP #-}
 
 module Database.Sql.Simple.SQLite
     ( SQLite
@@ -18,7 +20,9 @@ import qualified Database.SQLite.Simple as SQLite
 import qualified Database.SQLite.Simple.ToField as SQLite
 import qualified Database.SQLite.Simple.FromField as SQLite
 import Data.String
+#if !MIN_VERSION_base(4,7,0)
 import Data.Proxy
+#endif
 
 data SQLite = SQLite SQLite.Connection
     deriving Typeable
