@@ -1,5 +1,6 @@
 {-# LANGUAGE ExplicitNamespaces #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
 
 module Database.Sql.Simple
     ( -- * data type
@@ -21,10 +22,10 @@ module Database.Sql.Simple
     , connect
     , close
       -- * execute query
-    , execute
-    , execute_
-    , query
-    , query_
+    , execute, execute_
+    , query,   query_
+    , fold,    fold_
+    , forEach, forEach_
       -- ** transaction
     , begin
     , commit
@@ -59,6 +60,22 @@ query = I.query
 
 query_ :: (I.FromRow b r, I.Backend b) => b -> I.Query -> I.Sql bs [r]
 query_ = I.query_
+
+fold :: (I.Backend b, I.FromRow b r, I.ToRow b q)
+     => b -> I.Query -> q -> a -> (a -> r -> IO a) -> IO a
+fold = I.fold
+
+fold_ :: (I.Backend b, I.FromRow b r)
+      => b -> I.Query -> a -> (a -> r -> IO a) -> IO a
+fold_ = I.fold_
+
+forEach :: (I.Backend b, I.FromRow b r, I.ToRow b q)
+        => b -> I.Query -> q -> (r -> IO ()) -> IO ()
+forEach = I.forEach
+
+forEach_ :: (I.Backend b, I.FromRow b r)
+         => b -> I.Query -> (r -> IO ()) -> IO ()
+forEach_ = I.forEach_
 
 begin, commit, rollback :: I.Backend b => b -> I.Sql bs ()
 begin = I.begin

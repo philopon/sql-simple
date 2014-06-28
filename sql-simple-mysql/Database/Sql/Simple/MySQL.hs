@@ -93,6 +93,9 @@ instance Backend MySQL where
     query    (MySQL c) t q = Sql $ MySQL.query  c (mySqlQuery t) q
     query_   (MySQL c) t   = Sql $ MySQL.query_ c (mySqlQuery t)
 
+    fold  (MySQL c) q = MySQL.fold  c (mySqlQuery q)
+    fold_ (MySQL c) q = MySQL.fold_ c (mySqlQuery q)
+
     begin    c = execute_ c "start transaction"
     commit   (MySQL c) = Sql $ B.commit c
     rollback (MySQL c) = Sql $ B.rollback c

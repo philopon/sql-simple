@@ -67,6 +67,9 @@ instance Backend PostgreSQL where
     query    (PostgreSQL c) t q = Sql $ PSql.query  c (psqlQuery t) q
     query_   (PostgreSQL c) t   = Sql $ PSql.query_ c (psqlQuery t)
 
+    fold  (PostgreSQL c) q = PSql.fold  c (psqlQuery q)
+    fold_ (PostgreSQL c) q = PSql.fold_ c (psqlQuery q)
+
     begin    (PostgreSQL c) = Sql $ PSql.begin c
     commit   (PostgreSQL c) = Sql $ PSql.commit c
     rollback (PostgreSQL c) = Sql $ PSql.rollback c

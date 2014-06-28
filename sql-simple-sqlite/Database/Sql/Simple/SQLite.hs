@@ -44,6 +44,9 @@ instance Backend SQLite where
     query    (SQLite c) t q = Sql $ SQLite.query  c (sqliteQuery t) q
     query_   (SQLite c) t   = Sql $ SQLite.query_ c (sqliteQuery t)
 
+    fold  (SQLite c) q = SQLite.fold  c (sqliteQuery q)
+    fold_ (SQLite c) q = SQLite.fold_ c (sqliteQuery q)
+
     begin    c = execute_ c "BEGIN TRANSACTION"
     commit   c = execute_ c "COMMIT TRANSACTION"
     rollback c = execute_ c "ROLLBACK TRANSACTION"
