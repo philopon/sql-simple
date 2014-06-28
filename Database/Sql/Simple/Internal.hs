@@ -58,14 +58,22 @@ class Typeable b => Backend b where
     type ToRow b   :: * -> Constraint
     type FromRow b :: * -> Constraint
   
-    connect :: ConnectInfo b -> IO b
-    close   :: b -> IO ()
+    connect  :: ConnectInfo b -> IO b
+    close    :: b -> IO ()
     
     execute  :: ToRow b q => b -> Query -> q -> Sql c ()
     execute_ :: b -> Query -> Sql c ()
   
     query    :: (FromRow b r, ToRow b q) => b -> Query -> q -> Sql c [r]
     query_   :: FromRow b r => b -> Query -> Sql c [r]
+
+    fold     :: (FromRow b r, ToRow b q) => b -> Query -> q -> a -> (a -> r -> IO a) -> IO a
+    fold_    :: FromRow b r => b -> Query -> a -> (a -> r -> IO a) -> IO a
+
+    forEach  :: (FromRow b r, ToRow b q) => b -> Query -> q -> (r -> IO ()) -> IO ()
+    forEach  c q qs = fold  c q qs () . const
+    forEach_ :: FromRow b r => b -> Query -> (r -> IO ()) -> IO ()
+    forEach_ c q    = fold_ c q () . const
   
     begin    :: b -> Sql c ()
     commit   :: b -> Sql c ()
@@ -90,11 +98,10 @@ _ +:+ _ = Proxy
 -- example:
 -- 
 -- @
--- q = specify sqlite "sqlite query" "common query"
+-- q = specify sqlite \"sqlite query\" \"common query\"
 -- @
 specify :: Backend b => proxy ((b :: *) ': '[]) -> T.Text -> Query -> Query
 specify p q (Query t h) = Query t (H.insert (headt p) q h)
   where
     headt :: forall proxy a as. Typeable a => proxy ((a :: *) ': as) -> TypeRep
     headt _ = typeOf (undefined :: a)
-

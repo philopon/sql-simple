@@ -1,9 +1,11 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE CPP #-}
 
 module Database.Sql.Simple.SQLite
     ( SQLite
@@ -18,7 +20,9 @@ import qualified Database.SQLite.Simple as SQLite
 import qualified Database.SQLite.Simple.ToField as SQLite
 import qualified Database.SQLite.Simple.FromField as SQLite
 import Data.String
+#if !MIN_VERSION_base(4,7,0)
 import Data.Proxy
+#endif
 
 data SQLite = SQLite SQLite.Connection
     deriving Typeable
@@ -39,6 +43,9 @@ instance Backend SQLite where
 
     query    (SQLite c) t q = Sql $ SQLite.query  c (sqliteQuery t) q
     query_   (SQLite c) t   = Sql $ SQLite.query_ c (sqliteQuery t)
+
+    fold  (SQLite c) q = SQLite.fold  c (sqliteQuery q)
+    fold_ (SQLite c) q = SQLite.fold_ c (sqliteQuery q)
 
     begin    c = execute_ c "BEGIN TRANSACTION"
     commit   c = execute_ c "COMMIT TRANSACTION"
