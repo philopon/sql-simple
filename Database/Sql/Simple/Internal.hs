@@ -97,4 +97,3 @@ specify p q (Query t h) = Query t (H.insert (headt p) q h)
   where
     headt :: forall proxy a as. Typeable a => proxy ((a :: *) ': as) -> TypeRep
     headt _ = typeOf (undefined :: a)
-

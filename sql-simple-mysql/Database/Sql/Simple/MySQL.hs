@@ -6,6 +6,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Database.Sql.Simple.MySQL
     ( MySQL
@@ -44,8 +45,29 @@ instance MySQL.Result a => MySQL.QueryResults (Only a) where
 instance (MySQL.QueryParams a, MySQL.QueryParams b) => MySQL.QueryParams (a :. b) where
     renderParams (a :. b) = MySQL.renderParams a ++ MySQL.renderParams b
 
-instance (MySQL.QueryResults a, MySQL.QueryResults b) => MySQL.QueryResults (a :. b) where
-    convertResults a b = MySQL.convertResults a b
+class MySQL.QueryResults a => QueryResultsN a where
+  queryLength :: proxy a -> Int
+
+instance MySQL.Result a => QueryResultsN (Only a) where queryLength _ = 1
+instance (MySQL.Result a, MySQL.Result b) => QueryResultsN (a,b) where queryLength _ = 2
+instance (MySQL.Result a, MySQL.Result b, MySQL.Result c) => QueryResultsN (a,b,c) where queryLength _ = 3
+instance (MySQL.Result a, MySQL.Result b, MySQL.Result c, MySQL.Result d) => QueryResultsN (a,b,c,d) where queryLength _ = 4
+instance (MySQL.Result a, MySQL.Result b, MySQL.Result c, MySQL.Result d, MySQL.Result e) => QueryResultsN (a,b,c,d,e) where queryLength _ = 5
+instance (MySQL.Result a, MySQL.Result b, MySQL.Result c, MySQL.Result d, MySQL.Result e, MySQL.Result f) => QueryResultsN (a,b,c,d,e,f) where queryLength _ = 6
+instance (MySQL.Result a, MySQL.Result b, MySQL.Result c, MySQL.Result d, MySQL.Result e, MySQL.Result f, MySQL.Result g) => QueryResultsN (a,b,c,d,e,f,g) where queryLength _ = 7
+instance (MySQL.Result a, MySQL.Result b, MySQL.Result c, MySQL.Result d, MySQL.Result e, MySQL.Result f, MySQL.Result g, MySQL.Result h) => QueryResultsN (a,b,c,d,e,f,g,h) where queryLength _ = 8
+instance (MySQL.Result a, MySQL.Result b, MySQL.Result c, MySQL.Result d, MySQL.Result e, MySQL.Result f, MySQL.Result g, MySQL.Result h, MySQL.Result i) => QueryResultsN (a,b,c,d,e,f,g,h,i) where queryLength _ = 9
+instance (MySQL.Result a, MySQL.Result b, MySQL.Result c, MySQL.Result d, MySQL.Result e, MySQL.Result f, MySQL.Result g, MySQL.Result h, MySQL.Result i, MySQL.Result j) => QueryResultsN (a,b,c,d,e,f,g,h,i,j) where queryLength _ = 10
+
+instance (QueryResultsN a, QueryResultsN b) => QueryResultsN (a :. b) where
+    queryLength _ = queryLength (Proxy :: Proxy a) + queryLength (Proxy :: Proxy b)
+
+instance (QueryResultsN a, QueryResultsN b) => MySQL.QueryResults (a :. b) where
+    convertResults fs bs = 
+        let len = queryLength (Proxy :: Proxy a)
+            (fa, fb) = splitAt len fs
+            (ba, bb) = splitAt len bs
+        in MySQL.convertResults fa ba :. MySQL.convertResults fb bb
 
 instance Backend MySQL where
     data ConnectInfo MySQL = ConnectInfo
