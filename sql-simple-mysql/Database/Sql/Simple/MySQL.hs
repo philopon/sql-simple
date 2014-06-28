@@ -13,6 +13,7 @@ module Database.Sql.Simple.MySQL
     , ConnectInfo(..)
     , mySQL
     , module Data.Default.Class
+    , QueryResultsN(..)
     ) where
 
 import Control.Applicative
