@@ -7,7 +7,7 @@
 {-# LANGUAGE CPP #-}
 
 module Database.Sql.Simple.PostgreSQL
-    ( PostgreSQL
+    ( PostgreSQL(..)
     , ConnectInfo(..)
     , postgreSQL
     , psql

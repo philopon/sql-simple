@@ -9,7 +9,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Database.Sql.Simple.MySQL
-    ( MySQL
+    ( MySQL(..)
     , ConnectInfo(..)
     , mySQL
     , module Data.Default.Class

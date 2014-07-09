@@ -8,7 +8,7 @@
 {-# LANGUAGE CPP #-}
 
 module Database.Sql.Simple.SQLite
-    ( SQLite
+    ( SQLite(..)
     , ConnectInfo(..)
     , sqlite
     ) where
