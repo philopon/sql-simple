@@ -1,5 +1,5 @@
 name:                sql-simple
-version:             0.3.0
+version:             0.3.1
 synopsis:            common middle-level sql client.
 description:         please read README.md <https://github.com/philopon/sql-simple/blob/master/README.md>
 license:             MIT
