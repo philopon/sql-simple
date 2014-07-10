@@ -14,8 +14,11 @@
 module Database.Sql.Simple.Internal where
 
 import GHC.Exts (Constraint)
+import Control.Monad
 import Control.Monad.Catch
 import Control.Monad.IO.Class
+import Control.Monad.Base
+import Control.Monad.Trans.Control
 import Control.Applicative
 
 import qualified Data.Text as T
@@ -28,7 +31,13 @@ data Query = Query T.Text (H.HashMap TypeRep T.Text)
     deriving (Show, Eq)
 
 newtype Sql (l :: [*]) a = Sql { unSql :: IO a }
-    deriving (Functor, Applicative, Monad, MonadIO, MonadThrow, MonadCatch, MonadMask)
+    deriving (Functor, Applicative, Monad, MonadIO, MonadThrow, MonadCatch, MonadMask, MonadBase IO)
+
+instance MonadBaseControl IO (Sql l) where
+    newtype StM (Sql l) a = StMSql { unStMSql :: StM IO a }
+    liftBaseWith f = Sql $ 
+        liftBaseWith (\run -> f $ liftM StMSql . run . unSql)
+    restoreM = Sql . restoreM . unStMSql
 
 instance IsString Query where
     fromString s = Query (T.pack s) H.empty
@@ -75,6 +84,7 @@ class Typeable b => Backend b where
     forEach_ :: FromRow b r => b -> Query -> (r -> IO ()) -> IO ()
     forEach_ c q    = fold_ c q () . const
   
+class Backend b => Transaction b where
     begin    :: b -> Sql c ()
     commit   :: b -> Sql c ()
     rollback :: b -> Sql c ()

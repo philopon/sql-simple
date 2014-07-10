@@ -16,6 +16,7 @@ module Database.Sql.Simple
     , I.Sql
     , I.Elem
     , I.Backend
+    , I.Transaction
       -- * connection
     , I.ConnectInfo
     , I.withConnection
@@ -77,10 +78,10 @@ forEach_ :: (I.Backend b, I.FromRow b r)
          => b -> I.Query -> (r -> IO ()) -> IO ()
 forEach_ = I.forEach_
 
-begin, commit, rollback :: I.Backend b => b -> I.Sql bs ()
+begin, commit, rollback :: I.Transaction b => b -> I.Sql bs ()
 begin = I.begin
 commit = I.commit
 rollback = I.rollback
 
-withTransaction :: I.Backend b => b -> I.Sql bs a -> I.Sql bs a
+withTransaction :: I.Transaction b => b -> I.Sql bs a -> I.Sql bs a
 withTransaction = I.withTransaction
