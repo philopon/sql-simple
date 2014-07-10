@@ -9,7 +9,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Database.Sql.Simple.MySQL
-    ( MySQL
+    ( MySQL(..)
     , ConnectInfo(..)
     , mySQL
     , module Data.Default.Class
@@ -97,6 +97,7 @@ instance Backend MySQL where
     fold  (MySQL c) q = MySQL.fold  c (mySqlQuery q)
     fold_ (MySQL c) q = MySQL.fold_ c (mySqlQuery q)
 
+instance Transaction MySQL where
     begin    c = execute_ c "start transaction"
     commit   (MySQL c) = Sql $ B.commit c
     rollback (MySQL c) = Sql $ B.rollback c

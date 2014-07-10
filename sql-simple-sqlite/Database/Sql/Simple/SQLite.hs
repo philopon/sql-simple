@@ -8,7 +8,7 @@
 {-# LANGUAGE CPP #-}
 
 module Database.Sql.Simple.SQLite
-    ( SQLite
+    ( SQLite(..)
     , ConnectInfo(..)
     , sqlite
     ) where
@@ -47,6 +47,7 @@ instance Backend SQLite where
     fold  (SQLite c) q = SQLite.fold  c (sqliteQuery q)
     fold_ (SQLite c) q = SQLite.fold_ c (sqliteQuery q)
 
+instance Transaction SQLite where
     begin    c = execute_ c "BEGIN TRANSACTION"
     commit   c = execute_ c "COMMIT TRANSACTION"
     rollback c = execute_ c "ROLLBACK TRANSACTION"

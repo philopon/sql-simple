@@ -1,5 +1,5 @@
 name:                sql-simple-postgresql
-version:             0.2.1
+version:             0.3.0
 synopsis:            postgresql backend for sql-simple
 -- description:         
 license:             MIT
@@ -17,7 +17,7 @@ library
   exposed-modules:     Database.Sql.Simple.PostgreSQL
   build-depends:       base                 >=4.6 && <4.8
                      , text                 >=1.1 && <1.2
-                     , sql-simple           >=0.2 && <0.3
+                     , sql-simple           >=0.3 && <0.4
                      , postgresql-simple    >=0.4 && <0.5
                      , data-default-class   >=0.0 && <0.1
 

@@ -1,5 +1,5 @@
 name:                sql-simple
-version:             0.2.0
+version:             0.3.0
 synopsis:            common middle-level sql client.
 description:         please read README.md <https://github.com/philopon/sql-simple/blob/master/README.md>
 license:             MIT
@@ -22,6 +22,8 @@ library
                      , text                 >=1.1 && <1.2
                      , transformers         >=0.4 && <0.5
                      , unordered-containers >=0.2 && <0.3
+                     , monad-control        >=0.3 && <0.4
+                     , transformers-base    >=0.4 && <0.5
 
   if impl(ghc < 7.8)
     build-depends:     tagged               >=0.7 && <0.8

@@ -1,6 +1,6 @@
-name:                sql-simple-sqlite
+name:                sql-simple-pool
 version:             0.3.0
-synopsis:            sqlite backend for sql-simple
+synopsis:            conection pool for sql-simple
 -- description:         
 license:             MIT
 license-file:        LICENSE
@@ -14,13 +14,14 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Database.Sql.Simple.SQLite
+  exposed-modules:     Database.Sql.Simple.Pool
   build-depends:       base                 >=4.6 && <4.8
+                     , text                 >=1.1 && <1.2
                      , sql-simple           >=0.3 && <0.4
-                     , sqlite-simple        >=0.4 && <0.5
-
-  if impl(ghc < 7.8)
-    build-depends:     tagged               >=0.7 && <0.8
+                     , data-default-class   >=0.0 && <0.1
+                     , resource-pool        >=0.2 && <0.3
+                     , time                 >=1.4 && <1.5
+                     , monad-control        >=0.3 && <0.4
 
   ghc-options:         -Wall -O2
   default-language:    Haskell2010

@@ -7,7 +7,7 @@
 {-# LANGUAGE CPP #-}
 
 module Database.Sql.Simple.PostgreSQL
-    ( PostgreSQL
+    ( PostgreSQL(..)
     , ConnectInfo(..)
     , postgreSQL
     , psql
@@ -70,6 +70,7 @@ instance Backend PostgreSQL where
     fold  (PostgreSQL c) q = PSql.fold  c (psqlQuery q)
     fold_ (PostgreSQL c) q = PSql.fold_ c (psqlQuery q)
 
+instance Transaction PostgreSQL where
     begin    (PostgreSQL c) = Sql $ PSql.begin c
     commit   (PostgreSQL c) = Sql $ PSql.commit c
     rollback (PostgreSQL c) = Sql $ PSql.rollback c

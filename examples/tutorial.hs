@@ -6,6 +6,7 @@ import Control.Applicative
 import Database.Sql.Simple
 import Database.Sql.Simple.SQLite
 import Database.Sql.Simple.PostgreSQL
+import Database.Sql.Simple.Pool
 
 -- you must specify 1st type variable of Sql Monad.
 -- by explicit type signature,
@@ -30,6 +31,7 @@ specificQuery c =
 
 main :: IO ()
 main = do
-    l <- withConnection ("test.sqlite3" :: ConnectInfo SQLite) testQuery
+    -- l <- withConnection ("test.sqlite3" :: ConnectInfo SQLite) testQuery
+    l <- withConnection (ConnectionPool def "test.sqlite3" :: ConnectInfo (Pool SQLite)) testQuery
     -- l <- withConnection (def :: ConnectInfo PostgreSQL) testQuery
     print l
