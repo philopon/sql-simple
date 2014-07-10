@@ -25,9 +25,9 @@ import qualified Data.Text as T
 import Data.Proxy
 import Data.Typeable
 import Data.String
-import qualified Data.HashMap.Strict as H
+import qualified Data.Map.Strict as M
 
-data Query = Query T.Text (H.HashMap TypeRep T.Text)
+data Query = Query T.Text (M.Map TypeRep T.Text)
     deriving (Show, Eq)
 
 newtype Sql (l :: [*]) a = Sql { unSql :: IO a }
@@ -40,10 +40,10 @@ instance MonadBaseControl IO (Sql l) where
     restoreM = Sql . restoreM . unStMSql
 
 instance IsString Query where
-    fromString s = Query (T.pack s) H.empty
+    fromString s = Query (T.pack s) M.empty
 
 getQuery :: TypeRep -> Query -> T.Text
-getQuery t (Query d h) = H.lookupDefault d t h
+getQuery t (Query d h) = maybe d id $ M.lookup t h
 
 newtype Only a = Only { fromOnly :: a }
 
@@ -111,7 +111,7 @@ _ +:+ _ = Proxy
 -- q = specify sqlite \"sqlite query\" \"common query\"
 -- @
 specify :: Backend b => proxy ((b :: *) ': '[]) -> T.Text -> Query -> Query
-specify p q (Query t h) = Query t (H.insert (headt p) q h)
+specify p q (Query t h) = Query t (M.insert (headt p) q h)
   where
     headt :: forall proxy a as. Typeable a => proxy ((a :: *) ': as) -> TypeRep
     headt _ = typeOf (undefined :: a)

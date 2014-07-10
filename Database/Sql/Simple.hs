@@ -33,7 +33,8 @@ module Database.Sql.Simple
     , rollback
     , withTransaction
     -- * specify backend
-    -- | 
+    -- |
+    --
     -- @ 
     --  sql (sqlite +:+ postgresql) $ query
     -- @
