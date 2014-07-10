@@ -1,3 +1,4 @@
 sql-simple-sqlite
 sql-simple-postgresql
 sql-simple-mysql
+sql-simple-pool
